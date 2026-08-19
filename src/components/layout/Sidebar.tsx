@@ -25,6 +25,19 @@ export const Sidebar: React.FC = () => {
 
   const waitingCount = queue.filter(q => q.status === 'waiting').length;
 
+  // Role Theme Color Rules
+  const activeColorClass = {
+    super_admin: 'bg-slate-900 text-white shadow-md shadow-slate-900/30',
+    owner: 'bg-[#635BFF] text-white shadow-md shadow-purple-500/20',
+    stylist: 'bg-[#0D9488] text-white shadow-md shadow-teal-500/20'
+  }[role];
+
+  const roleTagline = {
+    super_admin: 'Super Admin Fleet View',
+    owner: 'Owner Business View',
+    stylist: 'Stylist Floor View'
+  }[role];
+
   // Role Scoped Menus
   const superAdminMenu = [
     { id: 'superadmin', label: 'Super Admin Fleet', icon: ShieldCheck },
@@ -74,15 +87,23 @@ export const Sidebar: React.FC = () => {
         
         {/* Brand Logo */}
         <div className="flex items-center space-x-2 px-2 py-1">
-          <div className="p-2 bg-slate-900 text-white rounded-xl shadow-md flex items-center justify-center">
+          <div className={`p-2 rounded-xl shadow-md flex items-center justify-center ${
+            role === 'super_admin' ? 'bg-slate-900 text-white' :
+            role === 'owner' ? 'bg-[#635BFF] text-white' :
+            'bg-[#0D9488] text-white'
+          }`}>
             <Scissors className="w-5 h-5" />
           </div>
           <div>
             <h1 className="font-extrabold text-base tracking-wider uppercase text-slate-900 leading-none">
               BARBERSHOP
             </h1>
-            <p className="text-[10px] text-purple-600 font-bold tracking-tight mt-0.5 capitalize">
-              {role.replace('_', ' ')} View
+            <p className={`text-[10px] font-extrabold tracking-tight mt-0.5 ${
+              role === 'super_admin' ? 'text-purple-600' :
+              role === 'owner' ? 'text-purple-600' :
+              'text-teal-600'
+            }`}>
+              {roleTagline}
             </p>
           </div>
         </div>
@@ -102,7 +123,7 @@ export const Sidebar: React.FC = () => {
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold rounded-2xl transition-all ${
                     isActive
-                      ? 'bg-slate-900 text-white shadow-md'
+                      ? activeColorClass
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
@@ -131,7 +152,7 @@ export const Sidebar: React.FC = () => {
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold rounded-2xl transition-all ${
                     isActive
-                      ? 'bg-[#635BFF] text-white shadow-md shadow-purple-500/20'
+                      ? activeColorClass
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
@@ -167,7 +188,7 @@ export const Sidebar: React.FC = () => {
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold rounded-2xl transition-all ${
                     isActive
-                      ? 'bg-[#635BFF] text-white shadow-md shadow-purple-500/20'
+                      ? activeColorClass
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
@@ -177,7 +198,7 @@ export const Sidebar: React.FC = () => {
                   </div>
                   {item.badge && (
                     <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
-                      isActive ? 'bg-white text-purple-700' : 'bg-purple-100 text-purple-700'
+                      isActive ? 'bg-white text-teal-800' : 'bg-teal-100 text-teal-800'
                     }`}>
                       {item.badge}
                     </span>

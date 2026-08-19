@@ -4,12 +4,12 @@ import React from 'react';
 import { useSalon } from '../../context/SalonContext';
 import {
   Search,
-  MessageSquare,
   PlusCircle,
   RotateCcw,
   Lock,
   ShieldCheck,
-  Building2
+  Building2,
+  Scissors
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -20,7 +20,6 @@ export const Navbar: React.FC = () => {
     resetToDemoData,
     setIsAddCustomerOpen,
     activeTab,
-    setIsAuthModalOpen,
     employees,
     activeStylistId
   } = useSalon();
@@ -34,16 +33,45 @@ export const Navbar: React.FC = () => {
 
   const currentStylist = employees.find(e => e.id === activeStylistId) || employees[0];
 
+  // Theme color styles per role
+  const roleTheme = {
+    super_admin: {
+      badgeBg: 'bg-slate-900 text-purple-300 border border-slate-700',
+      activePill: 'bg-slate-900 text-white shadow-md shadow-slate-900/30',
+      avatarRing: 'ring-2 ring-slate-800',
+      buttonBg: 'bg-slate-900 hover:bg-slate-800 text-white'
+    },
+    owner: {
+      badgeBg: 'bg-purple-100 text-purple-800 border border-purple-200',
+      activePill: 'bg-[#635BFF] text-white shadow-md shadow-purple-500/20',
+      avatarRing: 'ring-2 ring-purple-200',
+      buttonBg: 'bg-[#635BFF] hover:bg-[#5249E6] text-white'
+    },
+    stylist: {
+      badgeBg: 'bg-teal-100 text-teal-800 border border-teal-200',
+      activePill: 'bg-[#0D9488] text-white shadow-md shadow-teal-500/20',
+      avatarRing: 'ring-2 ring-teal-200',
+      buttonBg: 'bg-[#0D9488] hover:bg-[#0F766E] text-white'
+    }
+  }[role];
+
   return (
     <header className="px-6 py-4 border-b border-slate-100 bg-white rounded-tr-[32px] flex flex-col md:flex-row md:items-center justify-between gap-4">
       
       {/* Left: Page Title & Date Subtitle */}
-      <div>
-        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{pageTitle}</h1>
-        <p className="text-xs text-slate-400 font-medium mt-0.5">{todayStr} • {salon.name}</p>
+      <div className="flex items-center space-x-3">
+        <div className={`p-2.5 rounded-2xl ${roleTheme.buttonBg} transition-all`}>
+          {role === 'super_admin' ? <ShieldCheck className="w-5 h-5 text-purple-300" /> :
+           role === 'owner' ? <Building2 className="w-5 h-5 text-white" /> :
+           <Scissors className="w-5 h-5 text-white" />}
+        </div>
+        <div>
+          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{pageTitle}</h1>
+          <p className="text-xs text-slate-400 font-medium mt-0.5">{todayStr} • {salon.name}</p>
+        </div>
       </div>
 
-      {/* Center & Right Actions: Search Bar, Notifications & Admin Avatar */}
+      {/* Center & Right Actions: Search Bar, Notifications & Role Badge */}
       <div className="flex flex-wrap items-center space-x-3 sm:space-x-4">
         
         {/* Search Bar Input */}
@@ -65,11 +93,11 @@ export const Navbar: React.FC = () => {
           <RotateCcw className="w-4 h-4" />
         </button>
 
-        {/* Add Customer Button (Visible to Owner & Stylist) */}
+        {/* Add Customer Button */}
         {role !== 'super_admin' && (
           <button
             onClick={() => setIsAddCustomerOpen(true)}
-            className="px-3.5 py-1.5 bg-[#635BFF] hover:bg-[#5249E6] text-white rounded-full text-xs font-bold shadow-xs transition-all flex items-center space-x-1"
+            className={`px-3.5 py-1.5 ${roleTheme.buttonBg} rounded-full text-xs font-bold shadow-xs transition-all flex items-center space-x-1`}
           >
             <PlusCircle className="w-4 h-4" />
             <span className="hidden sm:inline">+ Customer</span>
@@ -85,49 +113,21 @@ export const Navbar: React.FC = () => {
           <Lock className="w-4 h-4" />
         </button>
 
-        {/* User Profile Avatar */}
+        {/* User Profile Avatar with Distinct Role Badge */}
         <div className="flex items-center space-x-2.5 pl-2 border-l border-slate-200">
           <img
             src={role === 'stylist' ? currentStylist.photo : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120"}
             alt="User Avatar"
-            className="w-9 h-9 rounded-full object-cover ring-2 ring-purple-100"
+            className={`w-9 h-9 rounded-full object-cover ${roleTheme.avatarRing}`}
           />
           <div className="hidden sm:block text-left">
             <span className="block text-xs font-bold text-slate-900 leading-none">
               {role === 'super_admin' ? 'Super Admin' : role === 'owner' ? 'Owner / Admin' : currentStylist.name}
             </span>
-            <span className="text-[10px] text-purple-600 font-bold capitalize mt-0.5 block">
+            <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full capitalize mt-1 inline-block ${roleTheme.badgeBg}`}>
               {role.replace('_', ' ')}
             </span>
           </div>
-        </div>
-
-        {/* Role Switcher Pill (Super Admin | Owner | Stylist) */}
-        <div className="relative inline-flex bg-slate-100 p-0.5 rounded-full border border-slate-200">
-          <button
-            onClick={() => setIsAuthModalOpen(true)}
-            className={`px-2.5 py-1 text-[10px] font-extrabold rounded-full transition-all ${
-              role === 'super_admin' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Super
-          </button>
-          <button
-            onClick={() => setIsAuthModalOpen(true)}
-            className={`px-2.5 py-1 text-[10px] font-extrabold rounded-full transition-all ${
-              role === 'owner' ? 'bg-[#635BFF] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Owner
-          </button>
-          <button
-            onClick={() => setIsAuthModalOpen(true)}
-            className={`px-2.5 py-1 text-[10px] font-extrabold rounded-full transition-all ${
-              role === 'stylist' ? 'bg-[#635BFF] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Stylist
-          </button>
         </div>
       </div>
     </header>
